@@ -1013,9 +1013,8 @@ body {
   }
 
   .hero-content {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-xl);
-    text-align: center;
+    align-items: flex-start;
+    text-align: left;
   }
 
   .hero-text {
@@ -1047,6 +1046,8 @@ body {
 
   .hero-content {
     padding: 0 var(--spacing-sm);
+    align-items: flex-start;
+    text-align: left;
   }
 
   .modern-card {
