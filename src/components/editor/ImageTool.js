@@ -1,5 +1,6 @@
 import ImageSelector from './ImageSelector';
 import authService from '../../services/authService';
+import { API_BASE_URL } from '../../config/api.js';
 
 class ImageTool {
   static get toolbox() {
@@ -151,7 +152,7 @@ class ImageTool {
     const formData = new FormData();
     formData.append('image', file);
 
-    fetch('http://127.0.0.1:8000/api/images/editor-upload', {
+            fetch(`${API_BASE_URL}/images/editor-upload`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${authService.getToken()}`

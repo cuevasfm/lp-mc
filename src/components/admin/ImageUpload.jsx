@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import authService from '../../services/authService';
+import { API_BASE_URL } from '../../config/api.js';
 
 function ImageUpload({ onImageUploaded, allowMultiple = false, className = '' }) {
   const [uploading, setUploading] = useState(false);
@@ -26,7 +27,7 @@ function ImageUpload({ onImageUploaded, allowMultiple = false, className = '' })
     const formData = new FormData();
     formData.append('image', file);
 
-    const response = await authService.authenticatedRequest('http://127.0.0.1:8000/api/images/upload', {
+          const response = await authService.authenticatedRequest(`${API_BASE_URL}/images/upload`, {
       method: 'POST',
       body: formData,
       headers: {

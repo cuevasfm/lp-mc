@@ -1,4 +1,5 @@
 import authService from '../../services/authService';
+import { API_BASE_URL } from '../../config/api.js';
 
 class SimpleImageTool {
   static get toolbox() {
@@ -159,7 +160,7 @@ class SimpleImageTool {
     // Mostrar loading
     this.wrapper.innerHTML = '<div class="image-loading">Subiendo imagen...</div>';
 
-    fetch('http://127.0.0.1:8000/api/images/editor-upload', {
+            fetch(`${API_BASE_URL}/images/editor-upload`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${authService.getToken()}`

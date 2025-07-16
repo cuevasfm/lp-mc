@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../../services/authService';
+import { API_BASE_URL } from '../../config/api.js';
 
 function Categories() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ function Categories() {
   const loadCategories = async () => {
     try {
       setLoading(true);
-      const response = await authService.authenticatedRequest('http://127.0.0.1:8000/api/categories');
+      const response = await authService.authenticatedRequest(`${API_BASE_URL}/categories`);
       const data = await response.json();
       setCategories(data);
     } catch (error) {
@@ -48,8 +49,8 @@ function Categories() {
 
     try {
       const url = editingCategory 
-        ? `http://127.0.0.1:8000/api/categories/${editingCategory.id}`
-        : 'http://127.0.0.1:8000/api/categories';
+        ? `${API_BASE_URL}/categories/${editingCategory.id}`
+        : `${API_BASE_URL}/categories`;
       
       const method = editingCategory ? 'PUT' : 'POST';
 
@@ -93,7 +94,7 @@ function Categories() {
 
     try {
       setSaving(true);
-      const response = await authService.authenticatedRequest(`http://127.0.0.1:8000/api/categories/${categoryId}`, {
+      const response = await authService.authenticatedRequest(`${API_BASE_URL}/categories/${categoryId}`, {
         method: 'DELETE'
       });
 

@@ -9,6 +9,7 @@ import Table from '@editorjs/table';
 import SimpleImageTool from '../../components/editor/SimpleImageTool';
 import ImageSelector from '../../components/editor/ImageSelector';
 import authService from '../../services/authService';
+import { API_BASE_URL } from '../../config/api.js';
 
 
 function PostEditor() {
@@ -133,7 +134,7 @@ function PostEditor() {
               class: SimpleImageTool,
               config: {
                 endpoints: {
-                  byFile: 'http://127.0.0.1:8000/api/images/editor-upload',
+                  byFile: `${API_BASE_URL}/images/editor-upload`,
                 },
                 additionalRequestHeaders: {
                   'Authorization': `Bearer ${authService.getToken()}`
@@ -238,7 +239,7 @@ function PostEditor() {
                 class: SimpleImageTool,
                 config: {
                   endpoints: {
-                    byFile: 'http://127.0.0.1:8000/api/images/editor-upload',
+                    byFile: `${API_BASE_URL}/images/editor-upload`,
                   },
                   additionalRequestHeaders: {
                     'Authorization': `Bearer ${authService.getToken()}`
@@ -283,8 +284,8 @@ function PostEditor() {
   const loadCategoriesAndTags = async () => {
     try {
       const [categoriesRes, tagsRes] = await Promise.all([
-        authService.authenticatedRequest('http://127.0.0.1:8000/api/categories'),
-        authService.authenticatedRequest('http://127.0.0.1:8000/api/tags')
+        authService.authenticatedRequest(`${API_BASE_URL}/categories`),
+        authService.authenticatedRequest(`${API_BASE_URL}/tags`)
       ]);
 
       const categoriesData = await categoriesRes.json();
@@ -302,7 +303,7 @@ function PostEditor() {
       setLoading(true);
       console.log('Loading post with ID:', id);
       
-      const response = await authService.authenticatedRequest(`http://127.0.0.1:8000/api/admin/posts/${id}`);
+      const response = await authService.authenticatedRequest(`${API_BASE_URL}/admin/posts/${id}`);
       
       console.log('Response status:', response.status);
       
@@ -399,8 +400,8 @@ function PostEditor() {
       }
 
       const url = isEdit 
-        ? `http://127.0.0.1:8000/api/posts/${id}`
-        : 'http://127.0.0.1:8000/api/posts';
+        ? `${API_BASE_URL}/posts/${id}`
+        : `${API_BASE_URL}/posts`;
       
       const method = isEdit ? 'PUT' : 'POST';
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../../services/authService';
+import { API_BASE_URL } from '../../config/api.js';
 
 function PostsList() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ function PostsList() {
 
   const loadCategories = async () => {
     try {
-      const response = await authService.authenticatedRequest('http://127.0.0.1:8000/api/categories');
+      const response = await authService.authenticatedRequest(`${API_BASE_URL}/categories`);
       const data = await response.json();
       setCategories(data);
     } catch (error) {
@@ -49,7 +50,7 @@ function PostsList() {
       if (filters.search) params.append('search', filters.search);
 
       const response = await authService.authenticatedRequest(
-        `http://127.0.0.1:8000/api/admin/posts?${params.toString()}`
+        `${API_BASE_URL}/admin/posts?${params.toString()}`
       );
       
       const data = await response.json();
@@ -83,7 +84,7 @@ function PostsList() {
 
     try {
       setDeleting(postId);
-      const response = await authService.authenticatedRequest(`http://127.0.0.1:8000/api/posts/${postId}`, {
+      const response = await authService.authenticatedRequest(`${API_BASE_URL}/posts/${postId}`, {
         method: 'DELETE'
       });
 
@@ -102,7 +103,7 @@ function PostsList() {
 
   const handleStatusChange = async (postId, newStatus) => {
     try {
-      const response = await authService.authenticatedRequest(`http://127.0.0.1:8000/api/posts/${postId}`, {
+      const response = await authService.authenticatedRequest(`${API_BASE_URL}/posts/${postId}`, {
         method: 'PUT',
         body: JSON.stringify({ status: newStatus })
       });

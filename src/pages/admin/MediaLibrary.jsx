@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../../services/authService';
 import ImageUpload from '../../components/admin/ImageUpload';
+import { API_BASE_URL } from '../../config/api.js';
 
 function MediaLibrary() {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ function MediaLibrary() {
       params.append('per_page', pagination.per_page.toString());
 
       const response = await authService.authenticatedRequest(
-        `http://127.0.0.1:8000/api/images?${params.toString()}`
+        `${API_BASE_URL}/images?${params.toString()}`
       );
       
       if (!response.ok) {
@@ -93,7 +94,7 @@ function MediaLibrary() {
 
     try {
       setDeleting(imageId);
-      const response = await authService.authenticatedRequest(`http://127.0.0.1:8000/api/images/${imageId}`, {
+      const response = await authService.authenticatedRequest(`${API_BASE_URL}/images/${imageId}`, {
         method: 'DELETE'
       });
 
@@ -121,7 +122,7 @@ function MediaLibrary() {
     try {
       setLoading(true);
       const deletePromises = selectedImages.map(id => 
-        authService.authenticatedRequest(`http://127.0.0.1:8000/api/images/${id}`, {
+        authService.authenticatedRequest(`${API_BASE_URL}/images/${id}`, {
           method: 'DELETE'
         })
       );
@@ -174,7 +175,7 @@ function MediaLibrary() {
       setError('');
       setCleanupResult(null);
 
-      const response = await authService.authenticatedRequest('http://127.0.0.1:8000/api/images/cleanup', {
+      const response = await authService.authenticatedRequest(`${API_BASE_URL}/images/cleanup`, {
         method: 'POST'
       });
 
