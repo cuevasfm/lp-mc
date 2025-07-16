@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import authService from '../../services/authService';
+import { API_BASE_URL } from '../../config/api.js';
 
 function ImageSelector({ onImageSelect, onClose }) {
   const [images, setImages] = useState([]);
@@ -14,7 +15,7 @@ function ImageSelector({ onImageSelect, onClose }) {
   const loadImages = async () => {
     try {
       setLoading(true);
-      const response = await authService.authenticatedRequest('http://127.0.0.1:8000/api/images?per_page=50');
+      const response = await authService.authenticatedRequest(`${API_BASE_URL}/images?per_page=50`);
       const data = await response.json();
       setImages(data.data || []);
     } catch (error) {

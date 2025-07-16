@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../../services/authService';
+import { API_BASE_URL } from '../../config/api.js';
 
 function Tags() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ function Tags() {
   const loadTags = async () => {
     try {
       setLoading(true);
-      const response = await authService.authenticatedRequest('http://127.0.0.1:8000/api/tags');
+      const response = await authService.authenticatedRequest(`${API_BASE_URL}/tags`);
       const data = await response.json();
       setTags(data);
     } catch (error) {
@@ -48,8 +49,8 @@ function Tags() {
 
     try {
       const url = editingTag 
-        ? `http://127.0.0.1:8000/api/tags/${editingTag.id}`
-        : 'http://127.0.0.1:8000/api/tags';
+        ? `${API_BASE_URL}/tags/${editingTag.id}`
+        : `${API_BASE_URL}/tags`;
       
       const method = editingTag ? 'PUT' : 'POST';
 
@@ -93,7 +94,7 @@ function Tags() {
 
     try {
       setSaving(true);
-      const response = await authService.authenticatedRequest(`http://127.0.0.1:8000/api/tags/${tagId}`, {
+      const response = await authService.authenticatedRequest(`${API_BASE_URL}/tags/${tagId}`, {
         method: 'DELETE'
       });
 

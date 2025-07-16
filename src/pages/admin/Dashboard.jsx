@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import authService from '../../services/authService';
+import { API_BASE_URL } from '../../config/api.js';
 
 function Dashboard() {
   const { user, logout } = useAuth();
@@ -26,9 +27,9 @@ function Dashboard() {
       
       // Cargar posts con diferentes estados
       const [allPosts, categories, tags] = await Promise.all([
-        authService.authenticatedRequest('http://127.0.0.1:8000/api/admin/posts?status=all&per_page=100'),
-        authService.authenticatedRequest('http://127.0.0.1:8000/api/categories'),
-        authService.authenticatedRequest('http://127.0.0.1:8000/api/tags')
+        authService.authenticatedRequest(`${API_BASE_URL}/admin/posts?status=all&per_page=100`),
+        authService.authenticatedRequest(`${API_BASE_URL}/categories`),
+        authService.authenticatedRequest(`${API_BASE_URL}/tags`)
       ]);
 
       const postsData = await allPosts.json();
