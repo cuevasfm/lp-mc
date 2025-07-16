@@ -1,287 +1,383 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import blogApi from '../services/blogApi';
 
 function Blog() {
-  const [selectedPost, setSelectedPost] = useState(null)
-  
-  const blogPosts = [
-    {
-      id: 1,
-      title: "Construyendo mi Landing Page con React y Vite",
-      excerpt: "Una guía completa sobre cómo crear una landing page moderna con efectos neón, modo oscuro y animaciones usando React y Vite.",
-      date: "2024-12-15",
-      tags: ["React", "Vite", "CSS", "Desarrollo Web"],
-      readTime: "8 min",
-      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
-      content: `
-        <div class="blog-content">
-          <h2>¿Por qué elegí React y Vite?</h2>
-          <p>Cuando decidí crear mi nueva landing page, tenía claros algunos requisitos: quería una experiencia de usuario moderna, efectos visuales impactantes y un rendimiento excepcional. Después de evaluar varias opciones, me decidí por React con Vite por estas razones:</p>
-          
-          <h3>Ventajas de Vite sobre Create React App</h3>
-          <ul>
-            <li><strong>Arranque ultra-rápido:</strong> Vite utiliza ESBuild para el desarrollo, lo que resulta en tiempos de inicio hasta 10x más rápidos</li>
-            <li><strong>Hot Module Replacement (HMR) instantáneo:</strong> Los cambios se reflejan inmediatamente sin perder el estado</li>
-            <li><strong>Configuración mínima:</strong> Funciona out-of-the-box con muy poca configuración</li>
-            <li><strong>Optimización automática:</strong> Rollup para producción con tree-shaking y code-splitting</li>
-          </ul>
+  const navigate = useNavigate();
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
-          <h2>Implementando el diseño neón</h2>
-          <p>Una de las características más llamativas de mi landing page es el uso de colores neón y gradientes dinámicos. Aquí te muestro cómo implementé este efecto:</p>
+  useEffect(() => {
+    loadPosts();
+    loadCategories();
+  }, []);
 
-          <pre><code>:root {
-  --neon-cyan: #00ffff;
-  --neon-purple: #b300ff;
-  --neon-pink: #ff00ff;
-  --gradient-primary: linear-gradient(135deg, #00ffff 0%, #b300ff 50%, #ff00ff 100%);
-  --glow-cyan: 0 0 20px rgba(0, 255, 255, 0.5);
-}
+  useEffect(() => {
+    loadPosts();
+  }, [currentPage, selectedCategory, searchTerm]);
 
-.btn-neon {
-  background: var(--gradient-primary);
-  color: white;
-  box-shadow: var(--glow-cyan);
-  transition: all 0.3s ease;
-}
-
-.btn-neon:hover {
-  box-shadow: var(--glow-cyan), 0 0 40px rgba(0, 255, 255, 0.4);
-  transform: translateY(-2px);
-}</code></pre>
-
-          <h2>El pasaporte digital animado</h2>
-          <p>El elemento más único de mi landing page es sin duda el pasaporte digital animado. Este componente combina CSS animations con JavaScript para crear una experiencia interactiva:</p>
-
-          <h3>Características del pasaporte:</h3>
-          <ul>
-            <li>Animación de flotación continua con CSS keyframes</li>
-            <li>Efecto de glow pulsante que simula energía</li>
-            <li>Información personal estilizada como un documento oficial</li>
-            <li>Responsive design que se adapta a dispositivos móviles</li>
-          </ul>
-
-          <h2>Modo oscuro con Context API</h2>
-          <p>Implementé un sistema de modo oscuro/claro usando React Context y localStorage para persistir la preferencia del usuario:</p>
-
-          <pre><code>const [isDark, setIsDark] = useState(false)
-
-useEffect(() => {
-  const savedTheme = localStorage.getItem('theme')
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-  
-  if (savedTheme) {
-    setIsDark(savedTheme === 'dark')
-  } else {
-    setIsDark(prefersDark)
-  }
-}, [])
-
-useEffect(() => {
-  if (isDark) {
-    document.documentElement.classList.add('dark-theme')
-    localStorage.setItem('theme', 'dark')
-  } else {
-    document.documentElement.classList.remove('dark-theme')
-    localStorage.setItem('theme', 'light')
-  }
-}, [isDark])</code></pre>
-
-          <h2>Optimizaciones de rendimiento</h2>
-          <p>Para garantizar una experiencia fluida, implementé varias optimizaciones:</p>
-
-          <h3>1. Lazy Loading de componentes</h3>
-          <p>Utilicé React.lazy() para cargar componentes solo cuando son necesarios:</p>
-
-          <pre><code>const About = React.lazy(() => import('./pages/About'))
-const Projects = React.lazy(() => import('./pages/Projects'))</code></pre>
-
-          <h3>2. Prefers-reduced-motion</h3>
-          <p>Respeto las preferencias de accesibilidad del usuario:</p>
-
-          <pre><code>@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}</code></pre>
-
-          <h3>3. Optimización de imágenes</h3>
-          <p>Aunque en este proyecto uso principalmente CSS para los efectos visuales, cuando trabajo con imágenes siempre implemento:</p>
-          <ul>
-            <li>Formato WebP con fallback</li>
-            <li>Lazy loading nativo</li>
-            <li>Responsive images con srcset</li>
-          </ul>
-
-          <h2>Deployment y CI/CD</h2>
-          <p>Para el deployment, configuré una pipeline automatizada que:</p>
-          <ul>
-            <li>Ejecuta tests automatizados</li>
-            <li>Construye el proyecto para producción</li>
-            <li>Optimiza assets (minificación, compresión)</li>
-            <li>Despliega automáticamente en cada push a main</li>
-          </ul>
-
-          <h2>Próximos pasos</h2>
-          <p>Algunas mejoras que planeo implementar:</p>
-          <ul>
-            <li><strong>Blog dinámico:</strong> Conectar con un headless CMS como Strapi o Contentful</li>
-            <li><strong>Animaciones más complejas:</strong> Integrar Framer Motion para transiciones de página</li>
-            <li><strong>PWA:</strong> Convertir el sitio en una Progressive Web App</li>
-            <li><strong>Analytics:</strong> Implementar tracking de usuario con Google Analytics 4</li>
-          </ul>
-
-          <h2>Conclusión</h2>
-          <p>Crear esta landing page ha sido una experiencia increíble que me ha permitido experimentar con las últimas tecnologías web. La combinación de React, Vite y CSS moderno resulta en una experiencia de desarrollo muy fluida y un producto final de alta calidad.</p>
-
-          <p>El resultado es un sitio web rápido, accesible y visualmente impactante que refleja mi personalidad como desarrollador. Si estás considerando crear tu propia landing page, te animo a que experimentes con estas tecnologías.</p>
-
-          <p>¿Tienes alguna pregunta sobre la implementación? ¡No dudes en contactarme!</p>
-        </div>
-      `
-    },
-    {
-      id: 2,
-      title: "Próximamente: Tutoriales de React",
-      excerpt: "Planeo crear una serie de tutoriales sobre React desde lo básico hasta conceptos avanzados.",
-      date: "2024-01-20",
-      tags: ["React", "Tutorial", "JavaScript"],
-      readTime: "3 min",
-      image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
-    },
-    {
-      id: 3,
-      title: "Mis herramientas de desarrollo favoritas",
-      excerpt: "Una lista de las herramientas y extensiones que uso diariamente para ser más productivo.",
-      date: "2024-01-25",
-      tags: ["Productividad", "Herramientas", "VS Code"],
-      readTime: "5 min",
-      image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+  async function loadPosts() {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const filters = {};
+      if (selectedCategory) filters.category = selectedCategory;
+      if (searchTerm) filters.search = searchTerm;
+      
+      const data = await blogApi.fetchPosts(currentPage, 9, filters);
+      setPosts(data.data);
+      setPagination(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-  ]
+  }
 
-  if (selectedPost) {
+  async function loadCategories() {
+    try {
+      const data = await blogApi.fetchCategories();
+      setCategories(data);
+    } catch (err) {
+      console.error('Error loading categories:', err);
+    }
+  }
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    loadPosts();
+  };
+
+  const handleCategoryChange = (categorySlug) => {
+    setSelectedCategory(categorySlug);
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePostClick = (post) => {
+    navigate(`/blog/${post.slug}`);
+  };
+
+  if (loading && posts.length === 0) {
     return (
-      <div className="blog">
+      <div className="min-h-screen pt-[calc(70px+1rem)] pb-8 bg-black contact-page">
         <div className="container">
-          <div className="blog-post-full">
-            <button 
-              className="back-button"
-              onClick={() => setSelectedPost(null)}
-            >
-              ← Volver al blog
-            </button>
-            
-            <article className="full-post">
-              <div className="post-header">
-                <div className="post-meta">
-                  <span className="post-date">{selectedPost.date}</span>
-                  <span className="post-read-time">{selectedPost.readTime} de lectura</span>
-                </div>
-                
-                <h1 className="post-title">{selectedPost.title}</h1>
-                
-                <div className="post-tags">
-                  {selectedPost.tags.map(tag => (
-                    <span key={tag} className="tag">{tag}</span>
-                  ))}
-                </div>
-              </div>
-              
-              {selectedPost.image && (
-                <div className="post-image">
-                  <img 
-                    src={selectedPost.image} 
-                    alt={selectedPost.title}
-                    loading="lazy"
-                  />
-                </div>
-              )}
-              
-              <div 
-                className="post-content"
-                dangerouslySetInnerHTML={{ __html: selectedPost.content }}
-              />
-            </article>
+          <div className="flex flex-col items-center justify-center min-h-[400px]">
+            <div className="w-16 h-16 border-4 border-green-500/30 border-t-green-500 rounded-full animate-spin mb-4"></div>
+            <p className="text-gray-400 text-lg">Cargando entradas del blog...</p>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="blog">
+    <div className="min-h-screen pt-[calc(70px+1rem)] pb-8 bg-black contact-page">
       <div className="container">
-        <div className="blog-header">
-          <h1>Mi Blog</h1>
-          <p className="blog-intro">
-            Pensamientos, tutoriales y experiencias sobre desarrollo web y tecnología
-          </p>
+        {/* Header Section */}
+        <div className="text-center mb-16 md:mb-20 lg:mb-24 pb-10">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+            Blog
+          </h1>
+          <br />
         </div>
 
-        <div className="blog-posts">
-          {blogPosts.map(post => (
-            <article key={post.id} className="blog-post">
-              {post.image && (
-                <div className="post-image-preview">
-                  <img 
-                    src={post.image} 
-                    alt={post.title}
-                    loading="lazy"
-                  />
-                </div>
-              )}
-              
-              <div className="post-content-preview">
-                <div className="post-meta">
-                  <span className="post-date">{post.date}</span>
-                  <span className="post-read-time">{post.readTime} de lectura</span>
-                </div>
-                
-                <h2 className="post-title">{post.title}</h2>
-                <p className="post-excerpt">{post.excerpt}</p>
-                
-                <div className="post-tags">
-                  {post.tags.map(tag => (
-                    <span key={tag} className="tag">{tag}</span>
-                  ))}
-                </div>
-                
-                <button 
-                  className="read-more"
-                  onClick={() => setSelectedPost(post)}
-                >
-                  Leer más →
-                </button>
+        <div className="max-w-7xl mx-auto">
+          {/* Top Icon */}
+         {/*  <div className="flex items-center mb-8">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 border border-white/20 flex items-center justify-center">
+              <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14,2 14,8 20,8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10,9 9,9 8,9"/>
+              </svg>
+            </div>
+          </div> */}
+
+                                {/* Navigation and Search Bar */}
+           <div className="!py-4 !mb-4" style={{ padding: '2rem 0', marginBottom: '4rem' }}>
+             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between !gap-8" style={{ gap: '2rem' }}>
+               {/* Categories Navigation */}
+               <div className="flex-1 overflow-hidden">
+                 <div className="flex items-center !gap-4 overflow-x-auto scrollbar-hide !pb-3" style={{ gap: '1rem', paddingBottom: '0.75rem' }}>
+                   <button
+                     className={`inline-flex items-center rounded-md !px-4 !py-3 text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+                       selectedCategory === '' 
+                         ? 'bg-green-950 text-green-400 ring-1 ring-green-500/20 ring-inset hover:bg-green-900' 
+                         : 'bg-gray-900/50 text-gray-400 ring-1 ring-gray-700/30 ring-inset hover:bg-gray-800/50 hover:text-gray-300'
+                     }`}
+                     onClick={() => handleCategoryChange('')}
+                     style={{ padding: '0.75rem 1rem' }}
+                   >
+                     Todas las publicaciones
+                   </button>
+                   {categories.map(category => (
+                     <button
+                       key={category.id}
+                       className={`inline-flex items-center rounded-md !px-4 !py-3 text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+                         selectedCategory === category.slug 
+                           ? 'bg-green-950 text-green-400 ring-1 ring-green-500/20 ring-inset hover:bg-green-900' 
+                           : 'bg-gray-900/50 text-gray-400 ring-1 ring-gray-700/30 ring-inset hover:bg-gray-800/50 hover:text-gray-300'
+                       }`}
+                       onClick={() => handleCategoryChange(category.slug)}
+                       style={{ padding: '0.75rem 1rem' }}
+                     >
+                       {category.name}
+                     </button>
+                   ))}
+                 </div>
+               </div>
+ 
+               {/* Search Bar */}
+               <div className="lg:!ml-8" style={{ marginLeft: '2rem' }}>
+                 <form onSubmit={handleSearch} className="flex items-center">
+                   <div className="relative">
+                     <input
+                       type="text"
+                       placeholder="Buscar entradas..."
+                       value={searchTerm}
+                       onChange={(e) => setSearchTerm(e.target.value)}
+                       className="w-full lg:w-80 !h-12 !pl-5 !pr-12 bg-gray-900/30 border border-white/20 rounded-xl text-white placeholder:text-gray-500 focus:outline-none focus:border-white/40 focus:bg-gray-900/50 transition-all duration-200"
+                       style={{ height: '3rem', paddingLeft: '1.25rem', paddingRight: '3rem' }}
+                     />
+                     <button 
+                       type="submit"
+                       className="absolute right-1 top-1 !h-10 !w-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+                       style={{ height: '2.5rem', width: '2.5rem' }}
+                     >
+                       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                         <circle cx="11" cy="11" r="8"/>
+                         <path d="m21 21-4.35-4.35"/>
+                       </svg>
+                     </button>
+                   </div>
+                 </form>
+               </div>
+             </div>
+           </div>
+
+          {/* Error State */}
+          {error && (
+            <div className="bg-red-500/5 border border-red-500/10 rounded-xl p-6 text-center mb-12">
+              <p className="text-red-400 mb-4">{error}</p>
+              <button 
+                onClick={loadPosts} 
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition-all duration-200"
+              >
+                Reintentar
+              </button>
+            </div>
+          )}
+
+          {/* No Posts State */}
+          {posts.length === 0 && !loading && !error && (
+            <div className="bg-white/[0.02] backdrop-blur-sm border border-white/[0.08] rounded-3xl !p-12 md:!p-16 text-center mb-12">
+              <h2 className="text-2xl md:text-3xl font-semibold text-white mb-4">No se encontraron entradas</h2>
+              <p className="text-gray-300 text-lg">
+                {searchTerm || selectedCategory 
+                  ? 'No hay entradas que coincidan con tu búsqueda.'
+                  : 'Aún no hay entradas publicadas en el blog.'
+                }
+              </p>
+            </div>
+          )}
+
+          {/* Blog Posts Grid - Unified Grid with Dividers */}
+          {posts.length > 0 && (
+            <div className="mb-16">
+              {/* Unified Grid with Divider Lines */}
+              <div className="blog-grid bg-black border border-white/10">
+                {posts.map((post, index) => {
+                  // Generate simple geometric icons based on post id
+                  const getPostIcon = (id) => {
+                    const icons = [
+                      // Document
+                      <svg className="w-6 h-6 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14,2 14,8 20,8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                      </svg>,
+                      // Code
+                      <svg className="w-6 h-6 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="16 18 22 12 16 6"/>
+                        <polyline points="8 6 2 12 8 18"/>
+                      </svg>,
+                      // Terminal
+                      <svg className="w-6 h-6 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="4 17 10 11 4 5"/>
+                        <line x1="12" y1="19" x2="20" y2="19"/>
+                      </svg>,
+                      // Lightbulb
+                      <svg className="w-6 h-6 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 21h6"/>
+                        <path d="M12 21V15"/>
+                        <path d="M12 3a6 6 0 0 1 6 6c0 3-2 3-2 6H8c0-3-2-3-2-6a6 6 0 0 1 6-6z"/>
+                      </svg>,
+                      // Settings
+                      <svg className="w-6 h-6 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                      </svg>,
+                      // Star
+                      <svg className="w-6 h-6 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                      </svg>
+                    ];
+                    return icons[id % icons.length];
+                  };
+
+                  // Calculate if this is in the last row to remove bottom border
+                  const isInLastRow = index >= posts.length - Math.ceil(posts.length % 3) || (posts.length % 3 === 0 && index >= posts.length - 3);
+                  
+                  return (
+                    <article 
+                      key={post.id} 
+                      className={`blog-grid-cell group cursor-pointer relative overflow-hidden hover:bg-white/[0.02] transition-colors duration-300 ${isInLastRow ? 'border-b-0' : ''}`}
+                      style={{ 
+                        padding: '1.5rem', 
+                        height: '405px',
+                        display: 'flex',
+                        flexDirection: 'column'
+                      }}
+                      onClick={() => handlePostClick(post)}
+                    >
+                      {/* Header with icon and date */}
+                      <div className="flex items-center justify-between" style={{ marginBottom: '2rem' }}>
+                        {/* Icon */}
+                        <div className="opacity-70 group-hover:opacity-90 transition-opacity duration-300">
+                          {getPostIcon(post.id)}
+                        </div>
+                        
+                        {/* Date */}
+                        <div className="text-xs text-gray-500">
+                          {new Date(post.published_at).toLocaleDateString('es-ES', { 
+                            day: 'numeric',
+                            month: 'long'
+                          })}
+                        </div>
+                      </div>
+                      
+                      {/* Title - flexible height */}
+                      <h2 className="text-2xl font-bold text-white group-hover:text-green-400 transition-colors duration-300 leading-tight" style={{ marginBottom: '1rem' }}>
+                        {post.title}
+                      </h2>
+                      
+                      {/* Extract with dynamic space and fade effect */}
+                      <div className="flex-1 relative overflow-hidden">
+                        <p className="text-gray-400 text-sm leading-relaxed h-full overflow-hidden">
+                          {post.excerpt}
+                        </p>
+                        {/* Subtle fade effect on last 3 lines */}
+                        <div 
+                          className="absolute bottom-0 left-0 right-0 pointer-events-none"
+                          style={{
+                            height: '4rem',
+                            background: 'linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0.7) 70%, rgba(0, 0, 0, 1) 100%)'
+                          }}
+                        ></div>
+                      </div>
+                      
+                      {/* Author */}
+                      {post.user && (
+                        <div className="flex items-center mt-4 pt-3">
+                          <div className="w-6 h-6 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-xs font-semibold text-white mr-2">
+                            {post.user.name.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="text-gray-500 text-xs">
+                            {post.user.name}
+                          </span>
+                        </div>
+                      )}
+                    </article>
+                  );
+                })}
               </div>
-            </article>
-          ))}
-        </div>
+            </div>
+          )}
 
-        <div className="blog-coming-soon">
-          <div className="coming-soon-card">
-            <h2>¡Más contenido pronto!</h2>
-            <p>
-              Estoy trabajando en crear contenido valioso para la comunidad de desarrolladores. 
-              Próximamente encontrarás tutoriales, guías y reflexiones sobre:
-            </p>
-            <ul>
-              <li>Desarrollo Frontend con React y Vue.js</li>
-              <li>Backend con Node.js y Python</li>
-              <li>Mejores prácticas de desarrollo</li>
-              <li>Experiencias personales en proyectos</li>
-              <li>Reseñas de herramientas y tecnologías</li>
-            </ul>
-            <p>
-              <strong>¡Mantente conectado para no perderte las actualizaciones!</strong>
-            </p>
-          </div>
+          {/* Pagination */}
+          {pagination && pagination.last_page > 1 && (
+            <div className="flex items-center justify-center gap-4 mb-16">
+              <button
+                className="px-6 py-3 bg-white/5 text-white rounded-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={currentPage === 1}
+                onClick={() => handlePageChange(currentPage - 1)}
+              >
+                ← Anterior
+              </button>
+              
+              <div className="px-4 py-2 text-gray-300">
+                Página {currentPage} de {pagination.last_page}
+              </div>
+              
+              <button
+                className="px-6 py-3 bg-white/5 text-white rounded-lg border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={currentPage === pagination.last_page}
+                onClick={() => handlePageChange(currentPage + 1)}
+              >
+                Siguiente →
+              </button>
+            </div>
+          )}
+
+          {/* Coming Soon Section */}
+          {posts.length === 0 && !searchTerm && !selectedCategory && !loading && !error && (
+            <div className="bg-white/[0.02] backdrop-blur-sm border border-white/[0.08] rounded-3xl !p-12 md:!p-16">
+              <h2 className="text-2xl md:text-3xl font-semibold text-white mb-6 text-center">¡Más contenido pronto!</h2>
+              <p className="text-gray-300 leading-relaxed mb-6 text-center text-lg">
+                Estoy trabajando en crear contenido valioso para la comunidad de desarrolladores. 
+                Próximamente encontrarás tutoriales, guías y reflexiones sobre:
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <ul className="space-y-3">
+                  <li className="text-gray-300 flex items-center">
+                    <span className="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                    Desarrollo Frontend con React y Vue.js
+                  </li>
+                  <li className="text-gray-300 flex items-center">
+                    <span className="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                    Backend con Node.js y Python
+                  </li>
+                  <li className="text-gray-300 flex items-center">
+                    <span className="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                    Mejores prácticas de desarrollo
+                  </li>
+                </ul>
+                <ul className="space-y-3">
+                  <li className="text-gray-300 flex items-center">
+                    <span className="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                    Experiencias personales en proyectos
+                  </li>
+                  <li className="text-gray-300 flex items-center">
+                    <span className="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                    Reseñas de herramientas y tecnologías
+                  </li>
+                </ul>
+              </div>
+              <p className="text-center text-green-400 font-semibold text-lg">
+                ¡Mantente conectado para no perderte las actualizaciones!
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Blog
+export default Blog;

@@ -16,19 +16,7 @@ function Home() {
         </div>
       </section>
 
-      <section id="contact" className="contact-section">
-        <div className="container">
-          <h2>Contacto</h2>
-          {/* <p>
-            Interesado en desarrollar tu proyecto personalizado?
-          </p> */}
-          <div className="contact-info">
-            <a href="mailto:cuevasfm@gmail.com" className="contact-link">
-              cuevasfm@gmail.com
-            </a>
-          </div>
-        </div>
-      </section>
+      
     </div>
   )
 }
