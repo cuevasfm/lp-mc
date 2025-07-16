@@ -149,18 +149,6 @@ function Contact() {
                 Gracias por contactarme. Te responderé lo antes posible.
               </p>
               
-              <p style={{
-                color: '#fbbf24',
-                fontSize: '0.875rem',
-                marginBottom: '2rem',
-                padding: '0.75rem',
-                backgroundColor: 'rgba(251, 191, 36, 0.1)',
-                border: '1px solid rgba(251, 191, 36, 0.2)',
-                borderRadius: '0.5rem',
-                margin: '0 0 2rem 0'
-              }}>
-                Nota: El formulario está funcionando en modo demo. En producción, tu mensaje se enviaría directamente.
-              </p>
               
               <button
                 onClick={() => setSubmitted(false)}
@@ -207,15 +195,7 @@ function Contact() {
           <div style={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
             
             {/* Form Header */}
-            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: '600', color: '#ffffff', marginBottom: '1rem', margin: '0 0 1rem 0' }}>
-                Contacto
-              </h2>
-              <p style={{ color: '#9ca3af', fontSize: '1rem', margin: '0' }}>
-                Cuéntame sobre tu proyecto y trabajemos juntos.
-              </p>
-            </div>
-
+            <br />
             {/* Contact Form */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               {errors.general && (
@@ -375,7 +355,7 @@ function Contact() {
                       boxSizing: 'border-box',
                       minHeight: '120px'
                     }}
-                    placeholder="Cuéntame sobre tu proyecto, qué necesitas desarrollar, timeline, presupuesto estimado..."
+                    placeholder=""
                     required
                     onFocus={(e) => e.target.style.border = '2px solid #10b981'}
                     onBlur={(e) => e.target.style.border = errors.message ? '1px solid #ef4444' : '1px solid #374151'}

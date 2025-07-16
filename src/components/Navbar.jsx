@@ -39,7 +39,7 @@ function Navbar() {
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-accent-primary to-accent-secondary transition-all group-hover:w-full"></span>
               </Link>
             </li>
-            <li>
+           {/*  <li>
               <Link 
                 to="/about" 
                 className="block py-2 md:py-0 text-gray-300 hover:text-accent-primary font-medium text-sm transition-smooth relative group"
@@ -58,7 +58,7 @@ function Navbar() {
                 Proyectos
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-accent-primary to-accent-secondary transition-all group-hover:w-full"></span>
               </Link>
-            </li>
+            </li> */}
             <li>
               <Link 
                 to="/blog" 
